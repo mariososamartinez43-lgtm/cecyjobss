@@ -1,0 +1,39 @@
+base de datos y tabla:
+CREATE TABLE usuarios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    email VARCHAR(120) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,   -- usar password_hash()
+    telefono VARCHAR(20),
+    rol ENUM('buscador','empleador','admin') DEFAULT 'buscador'
+);
+CREATE TABLE categorias (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(80) NOT NULL,
+    icono VARCHAR(60)             
+);
+CREATE TABLE IF NOT EXISTS empleos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id INT NOT NULL,
+    categoria_id INT NOT NULL,
+    titulo VARCHAR(150) NOT NULL,
+    empresa VARCHAR(120),
+    descripcion TEXT,
+    ubicacion VARCHAR(120),
+    salario DECIMAL(10,2),
+    tipo_pago VARCHAR(50),
+    estatus ENUM('activo','cerrado') DEFAULT 'activo',
+    creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+    FOREIGN KEY (categoria_id) REFERENCES categorias(id)
+)
+CREATE TABLE IF NOT EXISTS postulaciones (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    empleo_id INT NOT NULL,
+    usuario_id INT NOT NULL,
+    mensaje TEXT,
+    fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY evitar_duplicados (empleo_id, usuario_id),
+    FOREIGN KEY (empleo_id) REFERENCES empleos(id) ON DELETE CASCADE,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+);
